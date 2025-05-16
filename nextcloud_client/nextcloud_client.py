@@ -519,7 +519,7 @@ class Client(object):
             raise HTTPResponseError(res)
         return False
 
-    def get_directory_as_zip(self, remote_path, local_file):
+    def get_directory_as_zip(self, user_name, remote_path, local_file):
         """Downloads a remote directory as zip
 
         :param remote_path: path to the remote directory to download
@@ -528,8 +528,10 @@ class Client(object):
         :raises: HTTPResponseError in case an HTTP error status was returned
         """
         remote_path = self._normalize_path(remote_path)
-        url = self.url + 'index.php/apps/files/ajax/download.php?dir=' \
-              + parse.quote(remote_path)
+        # old nextcloud < 31.0.4
+        # url = self.url + 'index.php/apps/files/ajax/download.php?dir=' \
+        #       + parse.quote(remote_path)
+        url = self.url + f'/remote.php/dav/files/{user_name}/{remote_path}/?accept=zip'
         res = self._session.get(url, stream=True)
         if res.status_code == 200:
             if local_file is None:
